@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">EkeLeaderboard</string>
+    <string name="spokenapp">LEADERBOARD</string>
+    <string name="title_activity">LEADERBOARD</string>
+    <string name="book">Submit</string>
+    <string name="learners_image">learners image</string>
+    <string name="learners_name">Learners Name</string>
+    <string name="learning_hours">Learning hours,</string>
+    <string name="country">Country</string>
+    <string name="skill_iq_score">skill IQ Score</string>
+    <string name="skill_name">Skill Name</string>
+    <string name="skill_iq_name">skill iq name</string>
+    <string name="title_activity_leaders_post">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="project_submission">Project Submission</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="project_on_github_link">Project on Github (Link)</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="post_dialog_cancel_button">post dialog cancel button</string>
+    <string name="submission_successful">Submission Successful</string>
+    <string name="unsuccessful_submission">Unsuccessful Submission</string>
+</resources>

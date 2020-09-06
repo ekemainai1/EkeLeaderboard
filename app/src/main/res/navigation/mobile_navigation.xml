@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/localViewPagerFragment">
+
+    <fragment
+        android:id="@+id/localViewPagerFragment"
+        android:name="com.example.ekeleaderboard.ui.LocalViewPagerFragment"
+        android:label="@string/title_activity"
+        tools:layout="@layout/local_view_pager_fragment" />
+    <fragment
+        android:id="@+id/learningLeadersFragment"
+        android:name="com.example.ekeleaderboard.ui.LearningLeadersFragment"
+        android:label="learning_leaders_fragment"
+        tools:layout="@layout/learning_leaders_fragment" />
+    <fragment
+        android:id="@+id/skillIQLeadersFragment"
+        android:name="com.example.ekeleaderboard.ui.SkillIQLeadersFragment"
+        android:label="skill_i_q_leaders_fragment"
+        tools:layout="@layout/skill_i_q_leaders_fragment" />
+    </navigation>
