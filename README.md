@@ -14,7 +14,18 @@ Android Support Repository
 Gradle 6.1.1
 
 ## Screenshots
+![image](https://user-images.githubusercontent.com/39128782/92336004-2e401880-f094-11ea-9c2e-5b15c16e12a7.png) ![image](https://user-images.githubusercontent.com/39128782/92336015-3dbf6180-f094-11ea-8841-e5c8392b68f1.png)
 
+
+![image](https://user-images.githubusercontent.com/39128782/92336021-47e16000-f094-11ea-8664-3776b8db13b4.png)
+![image](https://user-images.githubusercontent.com/39128782/92336026-52035e80-f094-11ea-9d13-878c78c566fc.png)
+
+
+![image](https://user-images.githubusercontent.com/39128782/92336030-5b8cc680-f094-11ea-8005-4f5233113f36.png)
+![image](https://user-images.githubusercontent.com/39128782/92336034-63e50180-f094-11ea-83fa-bd7e1e0faae7.png)
+
+
+![image](https://user-images.githubusercontent.com/39128782/92336040-6ba4a600-f094-11ea-916b-eda2eec0d636.png)
 
 ## Installing
 Go to your android studio file menu and select New menu, select Import sample or project from the flyout and after successful import into the platform, sync the project and build an apk which you can deploy on emulator or android machine live system.
