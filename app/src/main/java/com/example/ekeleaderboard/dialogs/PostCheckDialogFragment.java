@@ -64,7 +64,7 @@ public class PostCheckDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
 
-                ((LeadersPostActivity)requireActivity()).executePost();
+                ((LeadersPostActivity)requireActivity()).sendPostCredentials();
                 dismiss();
             }
         });

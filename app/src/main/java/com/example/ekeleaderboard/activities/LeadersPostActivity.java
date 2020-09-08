@@ -1,6 +1,7 @@
 package com.example.ekeleaderboard.activities;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
@@ -8,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -18,33 +20,29 @@ import com.example.ekeleaderboard.R;
 import com.example.ekeleaderboard.dialogs.PostCheckDialogFragment;
 import com.example.ekeleaderboard.dialogs.PostSuccessDialogFragment;
 import com.example.ekeleaderboard.dialogs.PostUnsucessDialogFragment;
-import com.example.ekeleaderboard.models.LearnersObject;
 import com.example.ekeleaderboard.models.PostModel;
 import com.example.ekeleaderboard.networkcalls.Api;
+import com.example.ekeleaderboard.threading.PostRequestThread;
+import com.example.ekeleaderboard.utils.Constants;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 import java.util.Objects;
-
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class LeadersPostActivity extends AppCompatActivity {
+public class LeadersPostActivity extends AppCompatActivity implements
+        Handler.Callback
+    {
+
+    private static final String TAG = "LeadersPostActivity";
 
     Toolbar toolbar;
     AppBarLayout appBarLayout;
@@ -55,6 +53,7 @@ public class LeadersPostActivity extends AppCompatActivity {
     EditText editTextLastName;
     EditText editTextEmail;
     EditText editTextProject;
+    ProgressDialog progressDialog;
 
     String firstName;
     String lastName;
@@ -62,13 +61,17 @@ public class LeadersPostActivity extends AppCompatActivity {
     String projectLink;
 
     PostModel postModel;
-    CompositeDisposable compositeDisposable;
+    private PostRequestThread postRequestThread;
+    private Handler mMainThreadHandler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leaders_post);
 
+        mMainThreadHandler = new Handler(this);
+        postRequestThread = new PostRequestThread(mMainThreadHandler);
+        postRequestThread.start();
 
         // Get all layout components
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -80,6 +83,7 @@ public class LeadersPostActivity extends AppCompatActivity {
         editTextLastName = (EditText) findViewById(R.id.editTextLast);
         editTextEmail = (EditText) findViewById(R.id.editTextEmailAddress);
         editTextProject = (EditText) findViewById(R.id.editTextProject);
+        progressDialog  = new ProgressDialog(LeadersPostActivity.this);
 
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
@@ -98,6 +102,73 @@ public class LeadersPostActivity extends AppCompatActivity {
         });
 
     }
+
+    public void sendPostCredentials(){
+        Log.d(TAG, "sendPostCredentials: called.");
+        Message message = Message.obtain(null, Constants.POST_INSERT_NEW);
+        Bundle bundle = new Bundle();
+
+        // verify text content
+        // Validate the fields and call post method to implement the api
+        if (validate(editTextFirstName) && validate(editTextLastName) && validateEmail()
+                && validate(editTextProject)) {
+
+            bundle.putString("firstName", firstName);
+            bundle.putString("lastName",lastName);
+            bundle.putString("email",email);
+            bundle.putString("project",projectLink);
+            message.setData(bundle);
+
+            postRequestThread.sendMessageToBackgroundThread(message);
+            // Clear all text after posting
+            editTextFirstName.getText().clear();
+            editTextLastName.getText().clear();
+            editTextEmail.getText().clear();
+            editTextProject.getText().clear();
+
+            // Display a progress dialog
+            progressDialog.setCancelable(false); // set cancelable to false
+            progressDialog.setMessage("Please Wait ... "); // set message
+            progressDialog.show(); // show progress dialog
+
+        }
+
+
+    }
+
+    private void sendMessageToThread(){
+        Log.d(TAG, "sendTestMessageToThread: sending message from thread:  " + Thread.currentThread().getName());
+        Message message = Message.obtain(null, Constants.POST_INSERT_NEW);
+        postRequestThread.sendMessageToBackgroundThread(message);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(postRequestThread != null) {
+            postRequestThread.quitThread();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        postRequestThread.quitThread();
+
+    }
+
 
     private boolean validate(EditText editText) {
         // Check the length of the enter data in EditText and give error if its empty
@@ -207,11 +278,34 @@ public class LeadersPostActivity extends AppCompatActivity {
         new Handler().postDelayed(dismissRunner, 120000);
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+     public boolean handleMessage(@NonNull Message message) {
+        switch (message.what) {
 
+            case Constants.POST_INSERT_SUCCESS: {
+                Log.d(TAG, "handleMessage: successfully posted project. This is from thread: "
+                        + Thread.currentThread().getName());
+                // In this method we will get the response from API
+                progressDialog.dismiss(); //dismiss progress dialog
+                // Display the message getting from web api
+                showSuccessAlertDialog();
+
+                break;
+            }
+            case Constants.POST_INSERT_FAIL: {
+                Log.d(TAG, "handleMessage: project posting failed. This is from thread: "
+                        + Thread.currentThread().getName());
+                // If error occurs in network transaction then we can get the error in this method.
+                //Toast.makeText(LeadersPostActivity.this, throwable.getMessage(), Toast.LENGTH_LONG).show();
+                progressDialog.dismiss(); // Dismiss progress dialog
+                showUnsuccessfulAlertDialog();
+
+                break;
+            }
+
+
+        }
+         return false;
+        }
     }
-
-
-}
